@@ -1,0 +1,137 @@
+# FLARE Configuration File
+# Gravitational Waveform Surrogate Model Settings
+
+# Waveform approximant configurations
+pycbc:
+  seobnrv4:
+    waveform_name:   "SEOBNRv4"
+    delta_t:         2048          # Sampling rate (1/delta_t Hz)
+    f_lower:         20.0          # Lower frequency cutoff (Hz)
+    detector_name:   "H1"          # Detector (H1, L1, V1)
+    waveform_length: 2048          # Number of time samples
+
+  phenomd:
+    waveform_name:   "IMRPhenomD"
+    delta_t:         2048
+    f_lower:         20.0
+    detector_name:   "H1"
+    waveform_length: 2048
+
+  seobnrv4hm:
+    waveform_name:   "SEOBNRv4HM"
+    delta_t:         2048
+    f_lower:         20.0
+    detector_name:   "H1"
+    waveform_length: 2048
+
+# Neural network model architecture
+model:
+  # Amplitude network
+  amp_emb_hidden: [64, 64]           # Embedding layers
+  amp_hidden: [256, 256, 256]        # Hidden layer sizes
+  amp_banks: 3                       # Number of network banks
+  amp_dropout: 0.15                  # Dropout rate
+  amp_lr: 0.0005                     # Learning rate
+  amp_clip: 3                        # Gradient clipping
+
+  # Phase network
+  phase_emb_hidden: [64, 64]         # Embedding layers
+  phase_hidden: [256, 256, 256, 256] # Hidden layer sizes
+  phase_banks: 6                     # Number of network banks
+  phase_dropout: 0.15                # Dropout rate
+  phase_lr: 0.0005                   # Learning rate
+  phase_clip: 4                      # Gradient clipping
+
+  # Fourier feature encoding
+  fourier_bands: 16                  # Number of Fourier bands
+  fourier_max_freq: 10.0            # Maximum frequency
+  fourier_learnable: false          # Learnable frequencies
+
+# Parameter space sampling ranges
+sampling_ranges:
+  mass_min:     30.0      # Minimum mass (solar masses)
+  mass_max:     100.0     # Maximum mass (solar masses)
+  spin_mag_min: -0.99     # Minimum spin magnitude
+  spin_mag_max:  0.99     # Maximum spin magnitude
+  incl_min:      0.0      # Minimum inclination (radians)
+  incl_max:      3.141592653589793  # Maximum inclination (pi)
+  ecc_min:       0.0      # Minimum eccentricity
+  ecc_max:       0.3      # Maximum eccentricity
+  clean:         true     # Use clean (true) or noisy (false) data
+  snr_min:       10       # Minimum SNR for noisy data
+  snr_max:       20       # Maximum SNR for noisy data
+
+# Training configuration
+training:
+  # Data settings
+  num_samples:    1000    # Number of training waveforms
+  val_split:      0.3     # Validation split fraction
+  random_seed:    42      # Random seed for reproducibility
+
+  # Optimization settings
+  optimizer:      "adam"   # Optimizer type
+  learning_rate:  0.005    # Global learning rate
+  weight_decay:   0.1      # L2 regularization
+
+  # Training loop
+  batch_size:     32768    # Batch size
+  num_epochs:     200      # Maximum epochs
+  patience:       50       # Early stopping patience
+  min_delta:      1e-6     # Minimum improvement for early stopping
+  gradient_clip:  1.0      # Gradient clipping value
+
+  # Learning rate scheduler
+  scheduler:
+    lr_decay_factor: 0.5   # LR reduction factor
+    lr_patience:     10    # Patience for LR reduction
+    min_lr:          1e-6  # Minimum learning rate
+
+  # Hyperparameter optimization
+  hpo:
+    n_trials:       50     # Number of Optuna trials
+    sampler:        "tpe"  # Sampling algorithm (tpe, random)
+    timeout:        null   # Time limit for HPO (seconds)
+
+  # Miscellaneous
+  seed_everything: true    # Seed all random generators
+
+# Hardware settings
+device: "cuda"  # Device: "cuda" or "cpu"
+
+# Notification settings (optional)
+notifications:
+  webhook_url: ""           # Discord webhook URL
+  discord_bot_token: ""     # Discord bot token
+  status_channel_id: 0      # Channel ID for status updates
+  guild_id: 0              # Discord guild ID
+
+# File paths
+paths:
+  checkpoint_dir: "checkpoints"   # Directory for model checkpoints
+  data_cache: "data_cache"       # Directory for cached datasets
+  logs_dir: "logs"               # Directory for log files
+  plots_dir: "plots"             # Directory for plots
+
+# Feature selection for training
+# Available: chirp_mass, symmetric_mass_ratio, effective_spin, 
+#           inclination, eccentricity, mass_ratio, total_mass
+train_features:
+  - "chirp_mass"
+  - "symmetric_mass_ratio"
+  # - "effective_spin"  # Uncomment to include spin
+  # - "eccentricity"    # Uncomment to include eccentricity
+
+# Evaluation settings
+evaluation:
+  n_test_samples: 1000           # Number of test samples
+  batch_size: 32                 # Batch size for evaluation
+  generate_plots: true           # Generate evaluation plots
+  save_predictions: false        # Save individual predictions
+
+# Advanced settings
+advanced:
+  mixed_precision: false         # Use mixed precision training
+  compile_model: false          # Use torch.compile (PyTorch 2.0+)
+  num_workers: 4                # DataLoader workers
+  pin_memory: true              # Pin memory for GPU
+  persistent_workers: true      # Keep workers alive

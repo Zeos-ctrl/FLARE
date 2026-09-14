@@ -1,0 +1,62 @@
+"""Shared helpers for the API routers."""
+from __future__ import annotations
+
+from src.api.schemas import ModelDesignModel, SettingsModel
+from src.core.config import ProjectConfig
+
+
+def config_from_state(project_name: str, settings: SettingsModel,
+                      design: ModelDesignModel) -> ProjectConfig:
+    """Assemble a ProjectConfig from persisted settings + a model design."""
+    return ProjectConfig(
+        project_name=project_name,
+        num_samples=settings.num_samples,
+        td_fixed_window=settings.td_fixed_window,
+        waveform_bank=settings.waveform_bank,
+        waveform=settings.waveform,
+        waveform_length=settings.waveform_length,
+        delta_t=1.0 / settings.sample_rate,
+        f_lower=settings.f_lower,
+        val_split=settings.val_split,
+        clean_data=settings.clean_data,
+        device=settings.device,
+        feature_names=list(settings.feature_names),
+        direct_strain=settings.direct_strain,
+        reduced_order=settings.reduced_order,
+        svd_energy=settings.svd_energy,
+        svd_max_rank=settings.svd_max_rank,
+        svd_min_rank=settings.svd_min_rank,
+        phase_scale_factor=settings.phase_scale_factor,
+        rom_phase_loss=settings.rom_phase_loss,
+        rom_match_epochs=settings.rom_match_epochs,
+        rom_match_lr=settings.rom_match_lr,
+        rom_curve_amp_pow=settings.rom_curve_amp_pow,
+        rom_curve_weight=settings.rom_curve_weight,
+        rom_heads=settings.rom_heads,
+        rom_separate_scale=settings.rom_separate_scale,
+        model_kind=design.model_kind,
+        amp_module=design.amp_module,
+        phase_module=design.phase_module,
+        mass_min=settings.mass_min, mass_max=settings.mass_max,
+        spin_min=settings.spin_min, spin_max=settings.spin_max,
+        incl_min=settings.incl_min, incl_max=settings.incl_max,
+        ecc_min=settings.ecc_min, ecc_max=settings.ecc_max,
+        amp_hidden_layers=[design.amp_hidden_size] * design.amp_layers,
+        amp_banks=design.amp_banks,
+        amp_dropout=design.amp_dropout,
+        amp_lr=design.amp_lr,
+        amp_weight_decay=design.amp_weight_decay,
+        phase_hidden_layers=[design.phase_hidden_size] * design.phase_layers,
+        phase_banks=design.phase_banks,
+        phase_dropout=design.phase_dropout,
+        phase_lr=design.phase_lr,
+        phase_weight_decay=design.phase_weight_decay,
+        fourier_bands=design.fourier_bands,
+        fourier_max_freq=design.fourier_max_freq,
+        fourier_learnable=design.fourier_learnable,
+        batch_size=design.batch_size,
+        num_epochs=design.num_epochs,
+        patience=design.patience,
+        hpo_trials=design.hpo_trials,
+        hpo_samples=design.hpo_samples,
+    )

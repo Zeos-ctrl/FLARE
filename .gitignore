@@ -1,0 +1,49 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- FLARE generated artifacts (trainable / reproducible — not committed) ---
+# NOTE: leading slash anchors these to the repo root so they do NOT match the
+# source package src/models/ (which must be committed).
+# Trained surrogate weights and reduced-order bases
+/models/
+/checkpoints/
+# Cached training banks, PSDs, duration models
+/data_cache/
+# Parameter-estimation benchmark outputs
+/pe_benchmark*/
+# Optuna studies / experiment records
+/experiments/
+*.db
+# Optional user model plugins
+/custom_models/
+
+# --- Figures / rendered docs ---
+docs/images/
+*.png
+*.pdf
+*.html
+
+# --- Frontend (dashboard) build artifacts ---
+frontend/node_modules/
+frontend/dist/
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+.idea/
+.vscode/
