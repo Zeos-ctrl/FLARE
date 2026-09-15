@@ -162,7 +162,9 @@ export default function DatasetPanel() {
                 <YAxis tick={CHART.tick} stroke={CHART.axis} width={54} />
                 {data.waveforms.map((_, k) => (
                   <Line key={k} type="monotone" dataKey={`w${k}`} dot={false}
-                    stroke={`hsl(${8 + (k * 32) % 340},70%,62%)`} strokeWidth={1.2} />
+                    stroke="hsl(var(--foreground))"
+                    strokeOpacity={0.3 + 0.6 * (k / Math.max(1, data.waveforms.length - 1))}
+                    strokeWidth={1.2} />
                 ))}
               </LineChart>
             </ResponsiveContainer>

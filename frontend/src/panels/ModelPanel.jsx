@@ -149,8 +149,19 @@ export default function ModelPanel() {
     </>
   ) : <Placeholder loading label="Loading designs" />
 
-  const arch = (prefix, size, layers) =>
-    ['θ', 'Fourier', ...Array(layers).fill(size), '1'].join(' → ')
+  // Compact node chain for the architecture flow: θ → Fourier → hidden×layers → 1.
+  const flowNodes = (hidden, layers, bands) =>
+    ['θ', `Fourier ${bands}`, `${hidden} × ${layers}`, '1']
+  const Flow = ({ nodes }) => (
+    <div className="flow">
+      {nodes.map((n, i) => (
+        <React.Fragment key={i}>
+          <span className={`flow__node ${i === 0 || i === nodes.length - 1 ? 'io' : ''}`}>{n}</span>
+          {i < nodes.length - 1 && <span className="flow__arrow">→</span>}
+        </React.Fragment>
+      ))}
+    </div>
+  )
 
   return (
     <PanelLayout title="Model Designer"
@@ -188,17 +199,17 @@ export default function ModelPanel() {
       ) : (
         <>
           <GraphCard title={`Architecture · ${d.name}`}>
-            <table>
-              <tbody>
-                <tr><td>Amplitude net</td><td className="mono">{arch('amp', d.amp_hidden_size, d.amp_layers)}</td></tr>
-                <tr><td>Amp banks</td><td className="mono">{d.amp_banks} × (dropout {d.amp_dropout})</td></tr>
-                <tr><td>Phase net</td><td className="mono">{arch('phase', d.phase_hidden_size, d.phase_layers)}</td></tr>
-                <tr><td>Phase banks</td><td className="mono">{d.phase_banks} × (dropout {d.phase_dropout})</td></tr>
-                <tr><td>Fourier</td><td className="mono">{d.fourier_bands} bands, max {d.fourier_max_freq}, learnable {String(d.fourier_learnable)}</td></tr>
-                <tr><td>Optimiser</td><td className="mono">Adam · amp {d.amp_lr} · phase {d.phase_lr}</td></tr>
-                <tr><td>Training</td><td className="mono">{d.num_epochs} epochs, batch {d.batch_size}, patience {d.patience}</td></tr>
-              </tbody>
-            </table>
+            <div className="flow-label">Amplitude net</div>
+            <Flow nodes={flowNodes(d.amp_hidden_size, d.amp_layers, d.fourier_bands)} />
+            <div className="flow-label">Phase net</div>
+            <Flow nodes={flowNodes(d.phase_hidden_size, d.phase_layers, d.fourier_bands)} />
+            <div className="def-list" style={{ marginTop: '1.1rem' }}>
+              <div className="def-row"><span className="k">Amp banks</span><span className="v">{d.amp_banks} × (dropout {d.amp_dropout})</span></div>
+              <div className="def-row"><span className="k">Phase banks</span><span className="v">{d.phase_banks} × (dropout {d.phase_dropout})</span></div>
+              <div className="def-row"><span className="k">Fourier</span><span className="v">{d.fourier_bands} bands · max {d.fourier_max_freq} · learnable {String(d.fourier_learnable)}</span></div>
+              <div className="def-row"><span className="k">Optimiser</span><span className="v">Adam · amp {d.amp_lr} · phase {d.phase_lr}</span></div>
+              <div className="def-row"><span className="k">Training</span><span className="v">{d.num_epochs} epochs · batch {d.batch_size} · patience {d.patience}</span></div>
+            </div>
           </GraphCard>
           <GraphCard title="Saved designs">
             <table>

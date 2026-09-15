@@ -109,25 +109,31 @@ export default function ProjectsPanel() {
         <Placeholder label={projects ? 'No projects yet' : 'No data available'} loading={!projects && !error} />
       ) : (
         <GraphCard title="Checkpoints">
-          <table>
-            <thead>
-              <tr><th>Name</th><th>Waveform</th><th>Samples</th><th>Trained</th><th>Evaluated</th><th></th></tr>
-            </thead>
-            <tbody>
-              {projects.map((p) => (
-                <tr key={p.name}
-                  className={`clickable ${selected === p.name ? 'selected' : ''}`}
-                  onClick={() => setSelected(selected === p.name ? null : p.name)}>
-                  <td className="mono">{p.name}</td>
-                  <td>{p.config?.waveform || '—'}</td>
-                  <td>{p.config?.num_samples ?? '—'}</td>
-                  <td>{p.trained ? '✓' : '—'}</td>
-                  <td>{p.evaluated ? '✓' : '—'}</td>
-                  <td><button className="mini" onClick={(e) => { e.stopPropagation(); remove(p.name) }}>Delete</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul className="rowlist">
+            {projects.map((p, i) => (
+              <li key={p.name}
+                className={`rowitem ${selected === p.name ? 'selected' : ''}`}
+                onClick={() => setSelected(selected === p.name ? null : p.name)}>
+                <span className="rowitem__rank">{String(i + 1).padStart(2, '0')}</span>
+                <div style={{ minWidth: 0 }}>
+                  <div className="rowitem__name">{p.name}</div>
+                  <div className="rowitem__meta">
+                    <span>{p.config?.waveform || 'unknown'}</span>
+                    <span>{p.config?.num_samples ?? '—'} samples</span>
+                  </div>
+                </div>
+                <div className="rowitem__metric">
+                  <span className="v" style={{ fontSize: '0.95rem' }}>
+                    {p.trained ? '✓' : '—'} / {p.evaluated ? '✓' : '—'}
+                  </span>
+                  <span className="k">train / eval</span>
+                </div>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <button className="mini" onClick={() => remove(p.name)}>delete</button>
+                </div>
+              </li>
+            ))}
+          </ul>
         </GraphCard>
       )}
       {selected && <ProjectStatus name={selected} />}

@@ -17,19 +17,22 @@ export const DEFAULT_CONFIG = {
   device: 'cuda',
 }
 
-// Shared Recharts theming to match the dashboard palette.
+// Shared Recharts theming — monochrome, driven by the CSS theme tokens so it
+// adapts to light/dark. Series are distinguished by shade + dash, not hue.
+const MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
 export const CHART = {
-  accent: '#de5648',
-  accent2: '#e8a05b',
-  grid: 'rgba(236,236,236,0.08)',
-  axis: 'rgba(236,236,236,0.45)',
-  tick: { fill: 'rgba(236,236,236,0.55)', fontSize: 10, fontFamily: 'IBM Plex Mono, monospace' },
+  accent: 'hsl(var(--foreground))',
+  accent2: 'hsl(var(--muted-foreground))',
+  grid: 'hsl(var(--foreground) / 0.08)',
+  axis: 'hsl(var(--muted-foreground))',
+  tick: { fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontFamily: MONO },
+  legend: { fontFamily: MONO, fontSize: 11 },
   tooltip: {
     contentStyle: {
-      background: '#0a0a0a', border: '1px solid rgba(236,236,236,0.2)',
-      borderRadius: 8, fontFamily: 'IBM Plex Mono, monospace', fontSize: 11,
+      background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))',
+      borderRadius: 8, fontFamily: MONO, fontSize: 11, color: 'hsl(var(--foreground))',
     },
-    labelStyle: { color: '#ececec' },
+    labelStyle: { color: 'hsl(var(--foreground))' },
   },
 }
 
@@ -126,9 +129,9 @@ export function LossCurveChart({ events }) {
         <XAxis dataKey="epoch" tick={CHART.tick} stroke={CHART.axis} />
         <YAxis scale="log" domain={['auto', 'auto']} tick={CHART.tick} stroke={CHART.axis} width={64} />
         <Tooltip {...CHART.tooltip} />
-        <Legend wrapperStyle={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }} />
+        <Legend wrapperStyle={CHART.legend} />
         <Line type="monotone" dataKey="amp" stroke={CHART.accent} dot={false} name="amp val loss" strokeWidth={1.5} />
-        <Line type="monotone" dataKey="phase" stroke={CHART.accent2} dot={false} name="phase val loss" strokeWidth={1.5} />
+        <Line type="monotone" dataKey="phase" stroke={CHART.accent2} dot={false} name="phase val loss" strokeWidth={1.5} strokeDasharray="4 3" />
       </LineChart>
     </ResponsiveContainer>
   )

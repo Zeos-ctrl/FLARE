@@ -332,36 +332,40 @@ export default function ExperimentsPanel() {
       ) : (
         <>
           <GraphCard title="Leaderboard">
-            <table>
-              <thead>
-                <tr><th>Name</th><th>Group</th><th>Status</th><th>Progress</th><th>Match</th><th>Val loss (a/p)</th><th>Age</th><th></th></tr>
-              </thead>
-              <tbody>
-                {sorted.map((r) => {
-                  const p = r.progress || {}
-                  const prog = ACTIVE.has(r.status)
-                    ? (p.epoch != null ? `${p.phase || 'run'} ${p.epoch + 1}/${p.total_epochs || '?'}` : (p.phase || '…'))
-                    : '—'
-                  return (
-                    <tr key={r.id} onClick={() => setSelected(r.id)}
-                      style={{ cursor: 'pointer', outline: selected === r.id ? '1px solid var(--accent)' : 'none' }}>
-                      <td className="mono">{r.name}</td>
-                      <td className="mono">{r.group || '—'}</td>
-                      <td><StatusBadge status={r.status} /></td>
-                      <td className="mono">{prog}</td>
-                      <td className="mono">{fmt(r.metrics?.mean_match)}</td>
-                      <td className="mono">{fmt(r.metrics?.best_val_loss_amp, 3)} / {fmt(r.metrics?.best_val_loss_phase, 3)}</td>
-                      <td className="mono">{ago(r.created_at)}</td>
-                      <td>
-                        {ACTIVE.has(r.status)
-                          ? <button className="mini" onClick={(e) => { e.stopPropagation(); api.cancelExperiment(r.id) }}>cancel</button>
-                          : <button className="mini" onClick={(e) => { e.stopPropagation(); api.deleteExperiment(r.id).then(() => api.listExperiments(groupFilter || undefined).then(setRows)) }}>delete</button>}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+            <ul className="rowlist">
+              {sorted.map((r, i) => {
+                const p = r.progress || {}
+                const prog = ACTIVE.has(r.status)
+                  ? (p.epoch != null ? `${p.phase || 'run'} ${p.epoch + 1}/${p.total_epochs || '?'}` : (p.phase || '…'))
+                  : null
+                return (
+                  <li key={r.id}
+                    className={`rowitem ${selected === r.id ? 'selected' : ''}`}
+                    onClick={() => setSelected(r.id)}>
+                    <span className="rowitem__rank">{String(i + 1).padStart(2, '0')}</span>
+                    <div style={{ minWidth: 0 }}>
+                      <div className="rowitem__name">{r.name}</div>
+                      <div className="rowitem__meta">
+                        <span>{r.group || 'no group'}</span>
+                        <StatusBadge status={r.status} />
+                        {prog && <span>{prog}</span>}
+                        <span>val {fmt(r.metrics?.best_val_loss_amp, 3)}/{fmt(r.metrics?.best_val_loss_phase, 3)}</span>
+                        <span>{ago(r.created_at)}</span>
+                      </div>
+                    </div>
+                    <div className="rowitem__metric">
+                      <span className="v">{fmt(r.metrics?.mean_match)}</span>
+                      <span className="k">match</span>
+                    </div>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      {ACTIVE.has(r.status)
+                        ? <button className="mini" onClick={() => api.cancelExperiment(r.id)}>cancel</button>
+                        : <button className="mini" onClick={() => api.deleteExperiment(r.id).then(() => api.listExperiments(groupFilter || undefined).then(setRows))}>delete</button>}
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
           </GraphCard>
 
           {selRec && (
@@ -381,9 +385,9 @@ export default function ExperimentsPanel() {
                     <XAxis dataKey="epoch" tick={CHART.tick} stroke={CHART.axis} />
                     <YAxis scale="log" domain={['auto', 'auto']} tick={CHART.tick} stroke={CHART.axis} width={64} />
                     <Tooltip {...CHART.tooltip} />
-                    <Legend wrapperStyle={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11 }} />
+                    <Legend wrapperStyle={CHART.legend} />
                     <Line type="monotone" dataKey="amp" stroke={CHART.accent} dot={false} name="amp val loss" strokeWidth={1.5} />
-                    <Line type="monotone" dataKey="phase" stroke={CHART.accent2} dot={false} name="phase val loss" strokeWidth={1.5} />
+                    <Line type="monotone" dataKey="phase" stroke={CHART.accent2} dot={false} name="phase val loss" strokeWidth={1.5} strokeDasharray="4 3" />
                   </LineChart>
                 </ResponsiveContainer>
               )}

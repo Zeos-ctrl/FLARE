@@ -71,7 +71,7 @@ export default function TuningPanel() {
               <XAxis dataKey="trial" name="trial" tick={CHART.tick} stroke={CHART.axis} />
               <YAxis dataKey="value" name="value" scale="log" domain={['auto', 'auto']} tick={CHART.tick} stroke={CHART.axis} width={64} />
               <Tooltip {...CHART.tooltip} />
-              <Scatter data={trials} fill={CHART.accent} />
+              <Scatter data={trials} fill={CHART.accent} fillOpacity={0.7} />
             </ScatterChart>
           </ResponsiveContainer>
         </GraphCard>

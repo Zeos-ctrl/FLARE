@@ -79,18 +79,16 @@ export default function SettingsPanel() {
       {!s ? <Placeholder loading /> : (
         <>
           <GraphCard title="Parameter space">
-            <table>
-              <tbody>
-                <tr><td>Masses</td><td className="mono">{s.mass_min} – {s.mass_max} M☉</td></tr>
-                <tr><td>Spins (aligned)</td><td className="mono">{s.spin_min} – {s.spin_max}</td></tr>
-                <tr><td>Inclination</td><td className="mono">{s.incl_min} – {s.incl_max} rad</td></tr>
-                <tr><td>Eccentricity</td><td className="mono">{s.ecc_min} – {s.ecc_max}</td></tr>
-                <tr><td>Waveform</td><td className="mono">{s.waveform}</td></tr>
-                <tr><td>Duration</td><td className="mono">{(s.waveform_length / s.sample_rate).toFixed(3)} s ({s.waveform_length} @ {s.sample_rate} Hz)</td></tr>
-                <tr><td>Low-freq cutoff</td><td className="mono">{s.f_lower} Hz</td></tr>
-                <tr><td>Training samples</td><td className="mono">{s.num_samples}</td></tr>
-              </tbody>
-            </table>
+            <div className="def-list">
+              <div className="def-row"><span className="k">Masses</span><span className="v">{s.mass_min} – {s.mass_max} M☉</span></div>
+              <div className="def-row"><span className="k">Spins (aligned)</span><span className="v">{s.spin_min} – {s.spin_max}</span></div>
+              <div className="def-row"><span className="k">Inclination</span><span className="v">{s.incl_min} – {s.incl_max} rad</span></div>
+              <div className="def-row"><span className="k">Eccentricity</span><span className="v">{s.ecc_min} – {s.ecc_max}</span></div>
+              <div className="def-row"><span className="k">Waveform</span><span className="v">{s.waveform}</span></div>
+              <div className="def-row"><span className="k">Duration</span><span className="v">{(s.waveform_length / s.sample_rate).toFixed(3)} s ({s.waveform_length} @ {s.sample_rate} Hz)</span></div>
+              <div className="def-row"><span className="k">Low-freq cutoff</span><span className="v">{s.f_lower} Hz</span></div>
+              <div className="def-row"><span className="k">Training samples</span><span className="v">{s.num_samples}</span></div>
+            </div>
           </GraphCard>
           <GraphCard title="Where is this stored?">
             <p className="muted" style={{ lineHeight: 1.7 }}>
